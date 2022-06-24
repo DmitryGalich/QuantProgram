@@ -18,6 +18,10 @@ MainWindow::MainWindow(Storage &storage, QWidget *parent)
   ui->tableView->setStyleSheet("QTableView{ selection-color: white; }"
                                "QLineEdit{ background-color: #E5E5EA }");
 
+  ui->boolLabel->setStyleSheet("color: #409CFF");
+  ui->doubleLabel->setStyleSheet("color: #32D74B");
+  ui->stringLabel->setStyleSheet("color: #FF9F0A");
+
   for (int c = 0; c < ui->tableView->horizontalHeader()->count(); ++c)
     ui->tableView->horizontalHeader()->setSectionResizeMode(
         c, QHeaderView::Stretch);

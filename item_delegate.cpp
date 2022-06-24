@@ -71,7 +71,7 @@ void ItemDelegate::initStyleOption(QStyleOptionViewItem *option,
     return;
   }
   case QMetaType::Type::QString: {
-    option->backgroundBrush = {QColor(255, 214, 10)};
+    option->backgroundBrush = {QColor(255, 159, 10)};
     return;
   }
   default:
