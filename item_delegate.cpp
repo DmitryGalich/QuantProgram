@@ -50,19 +50,12 @@ void ItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 
 void ItemDelegate::updateEditorGeometry(QWidget *editor,
                                         const QStyleOptionViewItem &option,
-                                        const QModelIndex &index) const {
-  std::cout << kStorage_.getAllObjectKeys().at(index.column()).toStdString()
-            << " : "
-            << kStorage_.getAllValueKeys().at(index.row()).toStdString()
-            << " : " << kStorage_.getValueType(index.column(), index.row())
-            << std::endl;
-
+                                        const QModelIndex & /*index*/) const {
   editor->setGeometry(option.rect);
 }
 
 void ItemDelegate::initStyleOption(QStyleOptionViewItem *option,
                                    const QModelIndex &index) const {
-  //  std::cout << index.column() << " : " << index.row() << std::endl;
 
   auto type = kStorage_.getValueType(index.column(), index.row());
 
@@ -70,19 +63,19 @@ void ItemDelegate::initStyleOption(QStyleOptionViewItem *option,
 
   switch (type) {
   case QMetaType::Type::Bool: {
-    option->backgroundBrush = {Qt::green};
+    option->backgroundBrush = {QColor(64, 156, 255)};
     return;
   }
   case QMetaType::Type::Double: {
-    option->backgroundBrush = {Qt::blue};
+    option->backgroundBrush = {QColor(50, 215, 75)};
     return;
   }
   case QMetaType::Type::QString: {
-    option->backgroundBrush = {Qt::yellow};
+    option->backgroundBrush = {QColor(255, 214, 10)};
     return;
   }
   default:
-    option->backgroundBrush = {Qt::red};
+    option->backgroundBrush = {QColor(229, 229, 234)};
     return;
   }
 }
