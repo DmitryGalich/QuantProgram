@@ -11,26 +11,19 @@ Storage createStorage() {
     Storage::Object object;
     object.binary_values_.insert({"key_0", nullptr});
     object.binary_values_.insert({"key_1", std::make_shared<bool>(false)});
-    object.binary_values_.insert({"key_2", std::make_shared<bool>(true)});
     object.numeric_values_.insert({"key_3", nullptr});
-    object.numeric_values_.insert({"key_4", std::make_unique<double>(0.0)});
     object.string_values_.insert({"key_5", nullptr});
-    object.string_values_.insert(
-        {"key_6", std::make_shared<QString>("object_string")});
     data.insert({"object_0", object});
   }
 
   {
     Storage::Object object;
     object.binary_values_.insert({"key_0", nullptr});
-    object.numeric_values_.insert({"key_3", nullptr});
+    object.numeric_values_.insert({"key_2", nullptr});
     object.numeric_values_.insert({"key_4", std::make_unique<double>(999)});
-    object.string_values_.insert({"key_5", nullptr});
     object.string_values_.insert(
         {"key_6", std::make_shared<QString>("hesoyam")});
-    object.string_values_.insert({"key_7", nullptr});
-    object.string_values_.insert(
-        {"key_8", std::make_shared<QString>("aezakmi")});
+
     data.insert({"object_1", object});
   }
 

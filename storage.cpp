@@ -4,138 +4,131 @@
 
 Storage::Storage(std::map<QString, Object> &data) : data_(data) {}
 
-void Storage::setValue(const QString &object_key, const QString &value_key,
-                       const bool value) {
-  if (!data_.contains(object_key))
-    return;
+std::vector<QString> Storage::getAllObjectKeys() const {
+  std::vector<QString> keys;
 
-  if (!data_.at(object_key).binary_values_.contains(value_key))
-    return;
-
-  data_.at(object_key).binary_values_.at(value_key).reset(new bool(value));
-}
-
-void Storage::setValue(const QString &object_key, const QString &value_key,
-                       const double value) {
-  if (!data_.contains(object_key))
-    return;
-
-  if (!data_.at(object_key).numeric_values_.contains(value_key))
-    return;
-
-  data_.at(object_key).numeric_values_.at(value_key).reset(new double(value));
-}
-
-void Storage::setValue(const QString &object_key, const QString &value_key,
-                       const QString &value) {
-  if (!data_.contains(object_key))
-    return;
-
-  if (!data_.at(object_key).string_values_.contains(value_key))
-    return;
-
-  data_.at(object_key).string_values_.at(value_key).reset(new QString(value));
-}
-
-Storage::Status Storage::getBinaryValue(const QString &object_key,
-                                        const QString &value_key,
-                                        bool &value) const {
-  if (!data_.contains(object_key))
-    return {false, false, false};
-
-  if (!data_.at(object_key).binary_values_.contains(value_key))
-    return {true, false, false};
-
-  if (!data_.at(object_key).binary_values_.at(value_key))
-    return {true, true, false};
-
-  value = *data_.at(object_key).binary_values_.at(value_key);
-  return {true, true, true};
-}
-
-Storage::Status Storage::getNumericValue(const QString &object_key,
-                                         const QString &value_key,
-                                         double &value) const {
-  if (!data_.contains(object_key))
-    return {false, false, false};
-
-  if (!data_.at(object_key).numeric_values_.contains(value_key))
-    return {true, false, false};
-
-  if (!data_.at(object_key).numeric_values_.at(value_key))
-    return {true, true, false};
-
-  value = *data_.at(object_key).numeric_values_.at(value_key);
-  return {true, true, true};
-}
-
-Storage::Status Storage::getStringValue(const QString &object_key,
-                                        const QString &value_key,
-                                        QString &value) const {
-  if (!data_.contains(object_key))
-    return {false, false, false};
-
-  if (!data_.at(object_key).string_values_.contains(value_key))
-    return {true, false, false};
-
-  if (!data_.at(object_key).string_values_.at(value_key))
-    return {true, true, false};
-
-  value = *data_.at(object_key).string_values_.at(value_key);
-  return {true, true, true};
-}
-
-std::set<QString> Storage::getAllObjectKeys() const {
-  std::set<QString> keys;
-
-  for (const auto &key : data_)
-    keys.insert(key.first);
+  for (const auto &key : data_) {
+    if (std::find(keys.begin(), keys.end(), key.first) == keys.end())
+      keys.emplace_back(key.first);
+  }
 
   return keys;
 }
 
-std::set<QString> Storage::getAllValueKeys() const {
-  std::set<QString> keys;
+std::vector<QString> Storage::getAllValueKeys() const {
+  std::vector<QString> keys;
 
   for (const auto &object_key : data_) {
-    for (const auto &value_key : data_.at(object_key.first).binary_values_)
-      keys.insert(value_key.first);
+    for (const auto &value_key : data_.at(object_key.first).binary_values_) {
+      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
+        keys.emplace_back(value_key.first);
+    }
 
-    for (const auto &value_key : data_.at(object_key.first).numeric_values_)
-      keys.insert(value_key.first);
+    for (const auto &value_key : data_.at(object_key.first).numeric_values_) {
+      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
+        keys.emplace_back(value_key.first);
+    }
 
-    for (const auto &value_key : data_.at(object_key.first).string_values_)
-      keys.insert(value_key.first);
+    for (const auto &value_key : data_.at(object_key.first).string_values_) {
+      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
+        keys.emplace_back(value_key.first);
+    }
   }
 
   return keys;
 }
 
-QMetaType::Type Storage::getValueType(const QString &object_key,
-                                      const QString &value_key) const {
+bool Storage::setValue(const size_t &object_index, const size_t &value_index,
+                       const QVariant &value) {
+  const auto object_keys = getAllObjectKeys();
+  if (object_index >= object_keys.size())
+    return false;
 
-  {
-    bool value(false);
-    auto status = getBinaryValue(object_key, value_key, value);
-    if (status.is_object_exists_ && status.is_value_exists_)
-      return QMetaType::Type::Bool;
+  const auto value_keys = getAllValueKeys();
+  if (value_index >= value_keys.size())
+    return false;
+
+  switch (getValueType(object_index, value_index)) {
+  case (QMetaType::Bool): {
+    data_.at(object_keys.at(object_index))
+        .binary_values_.at(value_keys.at(value_index))
+        .reset(new bool(value.toBool()));
+    break;
+  }
+  case (QMetaType::Double): {
+    data_.at(object_keys.at(object_index))
+        .numeric_values_.at(value_keys.at(value_index))
+        .reset(new double(value.toDouble()));
+    break;
+  }
+  case (QMetaType::QString): {
+    data_.at(object_keys.at(object_index))
+        .string_values_.at(value_keys.at(value_index))
+        .reset(new QString(value.toString()));
+    break;
+  }
+  default: {
+    return false;
+  }
   }
 
-  {
-    double value(0.0);
-    auto status = getNumericValue(object_key, value_key, value);
-    if (status.is_object_exists_ && status.is_value_exists_)
-      return QMetaType::Type::Double;
+  return true;
+}
+
+Storage::Status Storage::getValue(const size_t &object_index,
+                                  const size_t &value_index,
+                                  QVariant &value) const {
+  const auto object_keys = getAllObjectKeys();
+  if (object_index >= object_keys.size())
+    return {false, false, false};
+
+  if (!data_.contains(object_keys.at(object_index)))
+    return {false, false, false};
+
+  const auto value_keys = getAllValueKeys();
+  if (value_index >= value_keys.size())
+    return {true, false, false};
+
+  // Binary
+  if (data_.at(object_keys.at(object_index))
+          .binary_values_.contains(value_keys.at(value_index))) {
+
+    if (!data_.at(object_keys.at(object_index))
+             .binary_values_.at(value_keys.at(value_index)))
+      return {true, true, false};
+
+    value = *data_.at(object_keys.at(object_index))
+                 .binary_values_.at(value_keys.at(value_index));
+    return {true, true, true};
   }
 
-  {
-    QString value;
-    auto status = getStringValue(object_key, value_key, value);
-    if (status.is_object_exists_ && status.is_value_exists_)
-      return QMetaType::Type::QString;
+  // Numeric
+  if (data_.at(object_keys.at(object_index))
+          .numeric_values_.contains(value_keys.at(value_index))) {
+
+    if (!data_.at(object_keys.at(object_index))
+             .numeric_values_.at(value_keys.at(value_index)))
+      return {true, true, false};
+
+    value = *data_.at(object_keys.at(object_index))
+                 .numeric_values_.at(value_keys.at(value_index));
+    return {true, true, true};
   }
 
-  return QMetaType::Type::UnknownType;
+  // String
+  if (data_.at(object_keys.at(object_index))
+          .string_values_.contains(value_keys.at(value_index))) {
+
+    if (!data_.at(object_keys.at(object_index))
+             .string_values_.at(value_keys.at(value_index)))
+      return {true, true, false};
+
+    value = *data_.at(object_keys.at(object_index))
+                 .string_values_.at(value_keys.at(value_index));
+    return {true, true, true};
+  }
+
+  return {true, false, false};
 }
 
 QMetaType::Type Storage::getValueType(const size_t &object_index,

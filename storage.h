@@ -7,6 +7,7 @@
 
 #include <QMetaType>
 #include <QString>
+#include <QVariant>
 
 class Storage {
 public:
@@ -26,29 +27,18 @@ public:
   Storage(std::map<QString, Object> &data);
   ~Storage() = default;
 
-  void setValue(const QString &object_key, const QString &value_key,
-                const bool value);
-  void setValue(const QString &object_key, const QString &value_key,
-                const double value);
-  void setValue(const QString &object_key, const QString &value_key,
-                const QString &value);
+  std::vector<QString> getAllObjectKeys() const;
+  std::vector<QString> getAllValueKeys() const;
 
-  Status getBinaryValue(const QString &object_key, const QString &value_key,
-                        bool &value) const;
-  Status getNumericValue(const QString &object_key, const QString &value_key,
-                         double &value) const;
-  Status getStringValue(const QString &object_key, const QString &value_key,
-                        QString &value) const;
+  bool setValue(const size_t &object_index, const size_t &value_index,
+                const QVariant &value);
 
-  std::set<QString> getAllObjectKeys() const;
-  std::set<QString> getAllValueKeys() const;
+  Status getValue(const size_t &object_index, const size_t &value_index,
+                  QVariant &value) const;
 
-  QMetaType::Type getValueType(const QString &object_key,
-                               const QString &value_key) const;
-
+private:
   QMetaType::Type getValueType(const size_t &object_index,
                                const size_t &value_index) const;
 
-private:
   std::map<QString, Object> data_;
 };

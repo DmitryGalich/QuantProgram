@@ -24,11 +24,8 @@ public:
   Qt::ItemFlags flags(const QModelIndex &index) const Q_DECL_OVERRIDE;
 
 private:
-  QVector<QString> getKeysByIndex(const QModelIndex &index) const;
-  QVariant getValueByIndex(const QModelIndex &index) const;
-
-  std::set<QString> object_keys_;
-  std::set<QString> value_keys_;
+  std::vector<QString> object_keys_;
+  std::vector<QString> value_keys_;
 
   Storage &storage_;
 };
