@@ -8,8 +8,13 @@ ItemDelegate::ItemDelegate(const Storage &storage, QObject *parent)
 
 QWidget *ItemDelegate::createEditor(QWidget *parent,
                                     const QStyleOptionViewItem & /*option*/,
-                                    const QModelIndex & /*index*/) const {
+                                    const QModelIndex &index) const {
   QLineEdit *editor = new QLineEdit(parent);
+
+  auto type = kStorage_.getValueType(index.column(), index.row());
+  if (type == QMetaType::Type::Bool)
+    editor->setValidator(new QIntValidator());
+
   return editor;
 }
 
@@ -25,22 +30,15 @@ void ItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
   QLineEdit *line = static_cast<QLineEdit *>(editor);
 
   auto type = kStorage_.getValueType(index.column(), index.row());
-  if (type == QMetaType::Type::Bool || type == QMetaType::Type::Double) {
-
-    QDoubleValidator validator;
-    int pos = 0;
+  if (type == QMetaType::Type::Bool) {
     QString data = line->text();
+    QIntValidator validator;
+    int pos = 0;
 
     if (validator.validate(data, pos) != QValidator::Acceptable)
       return;
 
-    if (type == QMetaType::Type::Bool) {
-      model->setData(index, (data.toDouble() > 0));
-      return;
-    }
-
-    model->setData(index, data);
-
+    model->setData(index, (data.toDouble() > 0));
   } else {
     model->setData(index, line->text());
   }

@@ -20,7 +20,7 @@ Storage createStorage() {
     Storage::Object object;
     object.binary_values_.insert({"key_0", nullptr});
     object.numeric_values_.insert({"key_2", nullptr});
-    object.numeric_values_.insert({"key_4", std::make_unique<double>(999)});
+    object.numeric_values_.insert({"key_4", std::make_unique<double>(999.9)});
     object.string_values_.insert(
         {"key_6", std::make_shared<QString>("hesoyam")});
 

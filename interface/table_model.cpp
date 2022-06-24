@@ -1,7 +1,5 @@
 #include "table_model.h"
 
-#include <iostream>
-
 TableModel::TableModel(Storage &storage, QObject *parent)
     : QAbstractTableModel(parent), storage_(storage) {
 
@@ -34,36 +32,36 @@ QVariant TableModel::data(const QModelIndex &index, int role) const {
 
 bool TableModel::setData(const QModelIndex &index, const QVariant &value,
                          int role) {
-  if (index.isValid() && role == Qt::EditRole) {
+  if (!index.isValid() || role != Qt::EditRole)
+    return false;
 
-    if (!storage_.setValue(index.column(), index.row(), value))
-      return false;
+  if (!storage_.setValue(index.column(), index.row(), value))
+    return false;
 
-    emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
-    return true;
-  }
+  emit dataChanged(index, index, {Qt::DisplayRole, Qt::EditRole});
 
-  return false;
+  return true;
 }
 
 QVariant TableModel::headerData(int section, Qt::Orientation orientation,
                                 int role) const {
-  if (role == Qt::DisplayRole) {
-    if (orientation == Qt::Horizontal) {
-      if ((section >= static_cast<int>(object_keys_.size())) || (section < 0))
-        return QVariant();
+  if (role != Qt::DisplayRole)
+    return QVariant();
 
-      return object_keys_.at(section);
+  if (orientation == Qt::Horizontal) {
+    if ((section >= static_cast<int>(object_keys_.size())) || (section < 0))
+      return QVariant();
 
-    } else if (orientation == Qt::Vertical) {
-      if ((section >= static_cast<int>(value_keys_.size())) || (section < 0))
-        return QVariant();
+    return object_keys_.at(section);
 
-      return value_keys_.at(section);
-    }
+  } else if (orientation == Qt::Vertical) {
+    if ((section >= static_cast<int>(value_keys_.size())) || (section < 0))
+      return QVariant();
+
+    return value_keys_.at(section);
+  } else {
+    return QVariant();
   }
-
-  return QVariant();
 }
 
 Qt::ItemFlags TableModel::flags(const QModelIndex &index) const {
