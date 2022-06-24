@@ -1,10 +1,11 @@
 #pragma once
 
 #include <QItemDelegate>
+#include <QStyledItemDelegate>
 
 #include "storage.h"
 
-class ItemDelegate : public QItemDelegate {
+class ItemDelegate : public QStyledItemDelegate {
   Q_OBJECT
 public:
   explicit ItemDelegate(const Storage &storage, QObject *parent = 0);
@@ -17,6 +18,9 @@ protected:
                     const QModelIndex &index) const;
   void updateEditorGeometry(QWidget *editor, const QStyleOptionViewItem &option,
                             const QModelIndex &index) const;
+
+  void initStyleOption(QStyleOptionViewItem *option,
+                       const QModelIndex &index) const;
 
 private:
   const Storage &kStorage_;

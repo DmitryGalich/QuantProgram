@@ -19,9 +19,6 @@ public:
   MainWindow(Storage &storage, QWidget *parent = nullptr);
   ~MainWindow();
 
-private slots:
-  void on_tableView_clicked(const QModelIndex &index);
-
 private:
   Ui::MainWindow *ui;
   ItemDelegate *item_delegate_;

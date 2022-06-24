@@ -2,40 +2,48 @@
 
 #include <algorithm>
 
-Storage::Storage(std::map<QString, Object> &data) : data_(data) {}
+Storage::Storage(std::map<QString, Object> &data) : data_(data) {
+
+  const auto getAllObjectKeys = [&]() {
+    for (const auto &key : data_) {
+      if (std::find(keys_.object_keys_.begin(), keys_.object_keys_.end(),
+                    key.first) == keys_.object_keys_.end())
+        keys_.object_keys_.emplace_back(key.first);
+    }
+  };
+
+  const auto getAllValueKeys = [&]() {
+    for (const auto &object_key : data_) {
+      for (const auto &value_key : data_.at(object_key.first).binary_values_) {
+        if (std::find(keys_.value_keys_.begin(), keys_.value_keys_.end(),
+                      value_key.first) == keys_.value_keys_.end())
+          keys_.value_keys_.emplace_back(value_key.first);
+      }
+
+      for (const auto &value_key : data_.at(object_key.first).numeric_values_) {
+        if (std::find(keys_.value_keys_.begin(), keys_.value_keys_.end(),
+                      value_key.first) == keys_.value_keys_.end())
+          keys_.value_keys_.emplace_back(value_key.first);
+      }
+
+      for (const auto &value_key : data_.at(object_key.first).string_values_) {
+        if (std::find(keys_.value_keys_.begin(), keys_.value_keys_.end(),
+                      value_key.first) == keys_.value_keys_.end())
+          keys_.value_keys_.emplace_back(value_key.first);
+      }
+    }
+  };
+
+  getAllObjectKeys();
+  getAllValueKeys();
+}
 
 std::vector<QString> Storage::getAllObjectKeys() const {
-  std::vector<QString> keys;
-
-  for (const auto &key : data_) {
-    if (std::find(keys.begin(), keys.end(), key.first) == keys.end())
-      keys.emplace_back(key.first);
-  }
-
-  return keys;
+  return keys_.object_keys_;
 }
 
 std::vector<QString> Storage::getAllValueKeys() const {
-  std::vector<QString> keys;
-
-  for (const auto &object_key : data_) {
-    for (const auto &value_key : data_.at(object_key.first).binary_values_) {
-      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
-        keys.emplace_back(value_key.first);
-    }
-
-    for (const auto &value_key : data_.at(object_key.first).numeric_values_) {
-      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
-        keys.emplace_back(value_key.first);
-    }
-
-    for (const auto &value_key : data_.at(object_key.first).string_values_) {
-      if (std::find(keys.begin(), keys.end(), value_key.first) == keys.end())
-        keys.emplace_back(value_key.first);
-    }
-  }
-
-  return keys;
+  return keys_.value_keys_;
 }
 
 bool Storage::setValue(const size_t &object_index, const size_t &value_index,
@@ -48,28 +56,32 @@ bool Storage::setValue(const size_t &object_index, const size_t &value_index,
   if (value_index >= value_keys.size())
     return false;
 
-  switch (getValueType(object_index, value_index)) {
-  case (QMetaType::Bool): {
-    data_.at(object_keys.at(object_index))
-        .binary_values_.at(value_keys.at(value_index))
-        .reset(new bool(value.toBool()));
-    break;
-  }
-  case (QMetaType::Double): {
-    data_.at(object_keys.at(object_index))
-        .numeric_values_.at(value_keys.at(value_index))
-        .reset(new double(value.toDouble()));
-    break;
-  }
-  case (QMetaType::QString): {
-    data_.at(object_keys.at(object_index))
-        .string_values_.at(value_keys.at(value_index))
-        .reset(new QString(value.toString()));
-    break;
-  }
-  default: {
+  try {
+    switch (getValueType(object_index, value_index)) {
+    case (QMetaType::Bool): {
+      data_.at(object_keys.at(object_index))
+          .binary_values_.at(value_keys.at(value_index))
+          .reset(new bool(value.toBool()));
+      break;
+    }
+    case (QMetaType::Double): {
+      data_.at(object_keys.at(object_index))
+          .numeric_values_.at(value_keys.at(value_index))
+          .reset(new double(value.toDouble()));
+      break;
+    }
+    case (QMetaType::QString): {
+      data_.at(object_keys.at(object_index))
+          .string_values_.at(value_keys.at(value_index))
+          .reset(new QString(value.toString()));
+      break;
+    }
+    default: {
+      throw;
+    }
+    }
+  } catch (...) {
     return false;
-  }
   }
 
   return true;
@@ -133,32 +145,26 @@ Storage::Status Storage::getValue(const size_t &object_index,
 
 QMetaType::Type Storage::getValueType(const size_t &object_index,
                                       const size_t &value_index) const {
-
-  if (object_index >= data_.size())
+  if (object_index >= keys_.object_keys_.size() && (object_index < 0))
     return QMetaType::Type::UnknownType;
 
-  size_t object_i = 0;
-  for (const auto &object : data_) {
-    if (object_i < object_index) {
-      object_i++;
-      continue;
-    }
+  if (value_index >= keys_.value_keys_.size() && (value_index < 0))
+    return QMetaType::Type::UnknownType;
 
-    if (value_index < object.second.binary_values_.size())
-      return QMetaType::Type::Bool;
-    else if (value_index >= object.second.binary_values_.size() &&
-             value_index < (object.second.binary_values_.size() +
-                            object.second.numeric_values_.size()))
-      return QMetaType::Type::Double;
-    else if (value_index >= (object.second.binary_values_.size() +
-                             object.second.numeric_values_.size()) &&
-             value_index < (object.second.binary_values_.size() +
-                            object.second.numeric_values_.size() +
-                            object.second.string_values_.size()))
-      return QMetaType::Type::QString;
+  if (!data_.contains(keys_.object_keys_.at(object_index)))
+    return QMetaType::Type::UnknownType;
 
-    break;
-  }
+  if (data_.at(keys_.object_keys_.at(object_index))
+          .binary_values_.contains(keys_.value_keys_.at(value_index)))
+    return QMetaType::Type::Bool;
+
+  if (data_.at(keys_.object_keys_.at(object_index))
+          .numeric_values_.contains(keys_.value_keys_.at(value_index)))
+    return QMetaType::Type::Double;
+
+  if (data_.at(keys_.object_keys_.at(object_index))
+          .string_values_.contains(keys_.value_keys_.at(value_index)))
+    return QMetaType::Type::QString;
 
   return QMetaType::Type::UnknownType;
 }

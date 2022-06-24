@@ -23,6 +23,11 @@ public:
     bool is_value_set_{false};
   };
 
+  struct Keys {
+    std::vector<QString> object_keys_;
+    std::vector<QString> value_keys_;
+  };
+
   Storage() = delete;
   Storage(std::map<QString, Object> &data);
   ~Storage() = default;
@@ -41,4 +46,5 @@ public:
 
 private:
   std::map<QString, Object> data_;
+  Keys keys_;
 };

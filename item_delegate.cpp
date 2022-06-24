@@ -6,7 +6,7 @@
 #include <iostream>
 
 ItemDelegate::ItemDelegate(const Storage &storage, QObject *parent)
-    : QItemDelegate(parent), kStorage_(storage) {}
+    : QStyledItemDelegate(parent), kStorage_(storage) {}
 
 QWidget *ItemDelegate::createEditor(QWidget *parent,
                                     const QStyleOptionViewItem & /*option*/,
@@ -50,6 +50,39 @@ void ItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 
 void ItemDelegate::updateEditorGeometry(QWidget *editor,
                                         const QStyleOptionViewItem &option,
-                                        const QModelIndex & /*index*/) const {
+                                        const QModelIndex &index) const {
+  std::cout << kStorage_.getAllObjectKeys().at(index.column()).toStdString()
+            << " : "
+            << kStorage_.getAllValueKeys().at(index.row()).toStdString()
+            << " : " << kStorage_.getValueType(index.column(), index.row())
+            << std::endl;
+
   editor->setGeometry(option.rect);
+}
+
+void ItemDelegate::initStyleOption(QStyleOptionViewItem *option,
+                                   const QModelIndex &index) const {
+  //  std::cout << index.column() << " : " << index.row() << std::endl;
+
+  auto type = kStorage_.getValueType(index.column(), index.row());
+
+  QStyledItemDelegate::initStyleOption(option, index);
+
+  switch (type) {
+  case QMetaType::Type::Bool: {
+    option->backgroundBrush = {Qt::green};
+    return;
+  }
+  case QMetaType::Type::Double: {
+    option->backgroundBrush = {Qt::blue};
+    return;
+  }
+  case QMetaType::Type::QString: {
+    option->backgroundBrush = {Qt::yellow};
+    return;
+  }
+  default:
+    option->backgroundBrush = {Qt::red};
+    return;
+  }
 }

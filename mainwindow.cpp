@@ -25,8 +25,3 @@ MainWindow::MainWindow(Storage &storage, QWidget *parent)
 }
 
 MainWindow::~MainWindow() { delete ui; }
-
-void MainWindow::on_tableView_clicked(const QModelIndex &index) {
-
-  std::cout << index.column() << " : " << index.row() << std::endl;
-}
