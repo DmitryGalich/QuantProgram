@@ -36,9 +36,9 @@ public:
   Status getValue(const size_t &object_index, const size_t &value_index,
                   QVariant &value) const;
 
-private:
   QMetaType::Type getValueType(const size_t &object_index,
                                const size_t &value_index) const;
 
+private:
   std::map<QString, Object> data_;
 };

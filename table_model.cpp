@@ -23,30 +23,7 @@ QVariant TableModel::data(const QModelIndex &index, int role) const {
   if (!index.isValid() || role != Qt::DisplayRole)
     return QVariant();
 
-  //  switch (storage_.getValueType(index.column(), index.row())) {
-  //  case QMetaType::Type::Bool: {
-  //    QVariant value(false);
-
-  //    auto value_status = storage_.getValue(index.column(), index.row(),
-  //    value); if (value_status.is_object_exists_ &&
-  //    value_status.is_value_exists_ &&
-  //        value_status.is_value_set_)
-  //      return value;
-
-  //    break;
-  //  }
-  //  case QMetaType::Type::Double: {
-  //    break;
-  //  }
-  //  case QMetaType::Type::QString: {
-  //    break;
-  //  }
-  //  default:
-  //    break;
-  //  }
-
   QVariant value;
-
   auto value_status = storage_.getValue(index.column(), index.row(), value);
   if (value_status.is_object_exists_ && value_status.is_value_exists_ &&
       value_status.is_value_set_)

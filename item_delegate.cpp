@@ -22,31 +22,30 @@ void ItemDelegate::setEditorData(QWidget *editor,
   line->setText(value);
 }
 
-void ItemDelegate::setModelData(QWidget * /*editor*/,
-                                QAbstractItemModel * /*model*/,
-                                const QModelIndex & /*index*/) const {
-  //  QLineEdit *line = static_cast<QLineEdit *>(editor);
+void ItemDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
+                                const QModelIndex &index) const {
+  QLineEdit *line = static_cast<QLineEdit *>(editor);
 
-  //  auto type = kStorage_.getValueType(index.column(), index.row());
-  //  if (type == QMetaType::Type::Bool || type == QMetaType::Type::Double) {
+  auto type = kStorage_.getValueType(index.column(), index.row());
+  if (type == QMetaType::Type::Bool || type == QMetaType::Type::Double) {
 
-  //    QDoubleValidator validator;
-  //    int pos = 0;
-  //    QString data = line->text();
+    QDoubleValidator validator;
+    int pos = 0;
+    QString data = line->text();
 
-  //    if (validator.validate(data, pos) != QValidator::Acceptable)
-  //      return;
+    if (validator.validate(data, pos) != QValidator::Acceptable)
+      return;
 
-  //    if (type == QMetaType::Type::Bool) {
-  //      model->setData(index, (data.toDouble() > 0));
-  //      return;
-  //    }
+    if (type == QMetaType::Type::Bool) {
+      model->setData(index, (data.toDouble() > 0));
+      return;
+    }
 
-  //    model->setData(index, data);
+    model->setData(index, data);
 
-  //  } else {
-  //    model->setData(index, line->text());
-  //  }
+  } else {
+    model->setData(index, line->text());
+  }
 }
 
 void ItemDelegate::updateEditorGeometry(QWidget *editor,

@@ -268,16 +268,16 @@ TEST_F(StorageTest, setSrtingValueSuccessWithUnsetValue) {
 //  EXPECT_EQ(kNecessaryValue, value);
 //}
 
-// TEST_F(StorageTest, getValueType) {
-//  EXPECT_EQ(QMetaType::Bool, storage_->getValueType(0, 0));
-//  EXPECT_EQ(QMetaType::Bool, storage_->getValueType(0, 1));
+TEST_F(StorageTest, getValueType) {
+  EXPECT_EQ(QMetaType::Bool, storage_->getValueType(0, 0));
+  EXPECT_EQ(QMetaType::Bool, storage_->getValueType(0, 1));
 
-//  EXPECT_EQ(QMetaType::Double, storage_->getValueType(0, 2));
-//  EXPECT_EQ(QMetaType::Double, storage_->getValueType(0, 3));
+  EXPECT_EQ(QMetaType::Double, storage_->getValueType(0, 2));
+  EXPECT_EQ(QMetaType::Double, storage_->getValueType(0, 3));
 
-//  EXPECT_EQ(QMetaType::QString, storage_->getValueType(0, 4));
-//  EXPECT_EQ(QMetaType::QString, storage_->getValueType(0, 5));
-//}
+  EXPECT_EQ(QMetaType::QString, storage_->getValueType(0, 4));
+  EXPECT_EQ(QMetaType::QString, storage_->getValueType(0, 5));
+}
 
 int main(int argc, char **argv) {
   ::testing::InitGoogleTest(&argc, argv);
