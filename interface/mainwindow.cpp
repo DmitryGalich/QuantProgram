@@ -18,7 +18,7 @@ MainWindow::MainWindow(Storage &storage, QWidget *parent)
   ui->tableView->setStyleSheet("QTableView{ selection-color: white; }"
                                "QLineEdit{ background-color: #E5E5EA }");
 
-  ui->boolLabel->setStyleSheet("color: #409CFF");
+  ui->boolLabel->setStyleSheet("color: #FF453A");
   ui->doubleLabel->setStyleSheet("color: #32D74B");
   ui->stringLabel->setStyleSheet("color: #FF9F0A");
 

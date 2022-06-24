@@ -59,7 +59,7 @@ void ItemDelegate::initStyleOption(QStyleOptionViewItem *option,
 
   switch (type) {
   case QMetaType::Type::Bool: {
-    option->backgroundBrush = {QColor(64, 156, 255)};
+    option->backgroundBrush = {QColor(255, 69, 58)};
     return;
   }
   case QMetaType::Type::Double: {
