@@ -3,7 +3,7 @@
 #include <QItemDelegate>
 #include <QStyledItemDelegate>
 
-#include "storage.h"
+#include "storage/storage.h"
 
 class ItemDelegate : public QStyledItemDelegate {
   Q_OBJECT

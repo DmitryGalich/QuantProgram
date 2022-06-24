@@ -1,8 +1,8 @@
-#include "mainwindow.h"
+#include "interface/mainwindow.h"
 
 #include <QApplication>
 
-#include "storage.h"
+#include "storage/storage.h"
 
 Storage createStorage() {
   std::map<QString, Storage::Object> data;

@@ -16,24 +16,25 @@ add_compile_options(-Wall -Wextra -pedantic -Werror)
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 find_package(GTest 1.10 REQUIRED)
 
-set(PROJECT_SOURCES
-        main.cpp
-        mainwindow.cpp
-        mainwindow.h
-        table_model.cpp
-        table_model.h
-        item_delegate.cpp
-        item_delegate.h
-        mainwindow.ui
+set(INTERFACE_SOURCES
+        interface/mainwindow.cpp
+        interface/mainwindow.h
+        interface/mainwindow.ui
+
+        interface/table_model.cpp
+        interface/table_model.h
+
+        interface/item_delegate.cpp
+        interface/item_delegate.h
 )
 
 set(STORAGE_TARGET storage)
 
-add_library(${STORAGE_TARGET} storage.cpp storage.h)
+add_library(${STORAGE_TARGET} storage/storage.cpp storage/storage.h)
 target_link_libraries(${STORAGE_TARGET} PRIVATE Qt5::Widgets)
 
-add_executable(${STORAGE_TARGET}_tests storage_tests.cpp)
+add_executable(${STORAGE_TARGET}_tests storage/storage_tests.cpp)
 target_link_libraries(${STORAGE_TARGET}_tests PRIVATE GTest::GTest Qt5::Widgets ${STORAGE_TARGET})
 
-add_executable(${PROJECT_NAME} ${PROJECT_SOURCES})
+add_executable(${PROJECT_NAME} main.cpp ${INTERFACE_SOURCES})
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets ${STORAGE_TARGET})

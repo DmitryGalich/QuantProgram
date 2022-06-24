@@ -3,7 +3,7 @@
 #include <QAbstractTableModel>
 #include <QMouseEvent>
 
-#include "storage.h"
+#include "storage/storage.h"
 
 class TableModel : public QAbstractTableModel {
   Q_OBJECT

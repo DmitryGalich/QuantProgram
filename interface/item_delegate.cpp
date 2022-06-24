@@ -3,8 +3,6 @@
 #include <QIntValidator>
 #include <QLineEdit>
 
-#include <iostream>
-
 ItemDelegate::ItemDelegate(const Storage &storage, QObject *parent)
     : QStyledItemDelegate(parent), kStorage_(storage) {}
 
